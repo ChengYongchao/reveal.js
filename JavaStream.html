@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>JavaStream</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reset.css">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/black.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section class="slide level1">
+
+<h2 id="一前提">一、前提</h2>
+<p>什么是流？在用JDK1.8的你肯定知道我就不多bb了。本篇主要介绍一下内容：</p>
+<ul>
+<li class="fragment">流的创建</li>
+<li class="fragment">流的操作</li>
+<li class="fragment">流的结束</li>
+</ul>
+<p>听上去是不是很弟弟，别急，看完这篇，让你用流信手拈来。</p>
+</section>
+<section id="二流基本介绍" class="slide level1">
+<h1>二、流基本介绍</h1>
+<h2 id="什么是流">什么是流</h2>
+<ul>
+<li class="fragment">JDK8提供的对集合数据进行处理的一种方式</li>
+<li class="fragment">流中的元素是特定类型的对象，形成一个队列。 Java中的Stream<strong>并不会存储元素</strong>，而是按需计算</li>
+<li class="fragment">数据源流的来源。 可以是集合，数组，I/O channel， 产生器generator 等</li>
+<li class="fragment">有聚合操作 类似SQL语句一样的操作， 比如filter, map, reduce, find, match, sorted等</li>
+</ul>
+<h2 id="流的特点">流的特点</h2>
+<ul>
+<li class="fragment">一个流只能使用一次</li>
+<li class="fragment">Pipelining: 中间操作都会返回流对象本身。 这样多个操作可以串联成一个管道， 如同流式风格（fluent style），这样做可以对操作进行优化， 比如延迟执行(laziness)和短路( short-circuiting)</li>
+<li class="fragment">内部迭代： 以前对集合遍历都是通过Iterator或者For-Each的方式, 显式的在集合外部进行迭代， 这叫做外部迭代， Stream提供了内部迭代的方式， 通过访问者模式(Visitor)实现</li>
+</ul>
+<h2 id="串行流和并行流">串行流和并行流</h2>
+<p>顾名思义，串行流是一个个的执行，相当于单线程，并行流是并行执行，相当于多线程。</p>
+<ul>
+<li class="fragment">创建串行流：stream()</li>
+<li class="fragment">创建并行流：parallelStream()</li>
+</ul>
+<p>根据实际测试，在数据量比较大的时候，并行流的速度快串行流1.5到3倍，看实际需求有所不同。</p>
+</section>
+<section id="三正文" class="slide level1">
+<h1>三、正文</h1>
+<p>好，前面都是对流一点都不知道的人说的废话，下面进入正文</p>
+<h2 id="各个容器类实现stream的方式">1.各个容器类实现Stream的方式</h2>
+<p>本节覆盖了日常能用到的容器、数组、IO创建流的方式：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1"></a>    <span class="at">@Test</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">getStreamTest</span>()</span>
+<span id="cb1-3"><a href="#cb1-3"></a>    {</span>
+<span id="cb1-4"><a href="#cb1-4"></a>        <span class="co">/**</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>         <span class="co">*</span> <span class="an">{@code Collection}</span>在JDK1<span class="co">.8版本实现了Stream()</span>方法和parallelStream<span class="co">()</span>方法，</span>
+<span id="cb1-6"><a href="#cb1-6"></a>         <span class="co">*</span> 所有实现Collection的容器类通过调用stream<span class="co">()</span>方法或者 parallelStream<span class="co">()</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>         <span class="co">*/</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>        <span class="co">// list</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>        <span class="bu">List</span>&lt;<span class="bu">String</span>&gt; list = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        list.<span class="fu">add</span>(<span class="st">&quot;a&quot;</span>);</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        list.<span class="fu">add</span>(<span class="st">&quot;b&quot;</span>);</span>
+<span id="cb1-12"><a href="#cb1-12"></a>        list.<span class="fu">add</span>(<span class="st">&quot;c&quot;</span>);</span>
+<span id="cb1-13"><a href="#cb1-13"></a>        list.<span class="fu">stream</span>();</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>        <span class="co">// Set</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>        <span class="bu">Set</span>&lt;<span class="bu">Integer</span>&gt; set = <span class="kw">new</span> <span class="bu">HashSet</span>&lt;<span class="bu">Integer</span>&gt;();</span>
+<span id="cb1-17"><a href="#cb1-17"></a>        set.<span class="fu">add</span>(<span class="dv">1</span>);</span>
+<span id="cb1-18"><a href="#cb1-18"></a>        set.<span class="fu">add</span>(<span class="dv">2</span>);</span>
+<span id="cb1-19"><a href="#cb1-19"></a>        set.<span class="fu">add</span>(<span class="dv">3</span>);</span>
+<span id="cb1-20"><a href="#cb1-20"></a>        set.<span class="fu">stream</span>();</span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a>        <span class="co">// ArrayList</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>        <span class="bu">ArrayList</span>&lt;<span class="bu">Integer</span>&gt; arrList = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</span>
+<span id="cb1-24"><a href="#cb1-24"></a>        arrList.<span class="fu">add</span>(<span class="dv">1</span>);</span>
+<span id="cb1-25"><a href="#cb1-25"></a>        arrList.<span class="fu">add</span>(<span class="dv">2</span>);</span>
+<span id="cb1-26"><a href="#cb1-26"></a>        arrList.<span class="fu">stream</span>();</span>
+<span id="cb1-27"><a href="#cb1-27"></a></span>
+<span id="cb1-28"><a href="#cb1-28"></a>        <span class="co">// Vector</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a>        <span class="bu">Vector</span>&lt;<span class="bu">Integer</span>&gt; vector = <span class="kw">new</span> <span class="bu">Vector</span>&lt;&gt;();</span>
+<span id="cb1-30"><a href="#cb1-30"></a>        vector.<span class="fu">add</span>(<span class="dv">1</span>);</span>
+<span id="cb1-31"><a href="#cb1-31"></a>        vector.<span class="fu">add</span>(<span class="dv">2</span>);</span>
+<span id="cb1-32"><a href="#cb1-32"></a>        vector.<span class="fu">stream</span>();</span>
+<span id="cb1-33"><a href="#cb1-33"></a></span>
+<span id="cb1-34"><a href="#cb1-34"></a>        <span class="co">// Queue</span></span>
+<span id="cb1-35"><a href="#cb1-35"></a>        <span class="bu">Queue</span>&lt;<span class="bu">Integer</span>&gt; queue = <span class="kw">new</span> <span class="bu">ArrayBlockingQueue</span>&lt;&gt;(<span class="dv">12</span>);</span>
+<span id="cb1-36"><a href="#cb1-36"></a>        queue.<span class="fu">add</span>(<span class="dv">1</span>);</span>
+<span id="cb1-37"><a href="#cb1-37"></a>        queue.<span class="fu">add</span>(<span class="dv">2</span>);</span>
+<span id="cb1-38"><a href="#cb1-38"></a>        queue.<span class="fu">stream</span>();</span>
+<span id="cb1-39"><a href="#cb1-39"></a></span>
+<span id="cb1-40"><a href="#cb1-40"></a>        <span class="co">// Stack</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a>        <span class="bu">Stack</span>&lt;<span class="bu">Integer</span>&gt; stack = <span class="kw">new</span> <span class="bu">Stack</span>&lt;&gt;();</span>
+<span id="cb1-42"><a href="#cb1-42"></a>        stack.<span class="fu">add</span>(<span class="dv">1</span>);</span>
+<span id="cb1-43"><a href="#cb1-43"></a>        stack.<span class="fu">add</span>(<span class="dv">2</span>);</span>
+<span id="cb1-44"><a href="#cb1-44"></a>        stack.<span class="fu">stream</span>();</span>
+<span id="cb1-45"><a href="#cb1-45"></a></span>
+<span id="cb1-46"><a href="#cb1-46"></a>        <span class="co">// Map 通过调用map的entrySet()方法，获取Set再调用stream()</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a>        <span class="bu">Map</span>&lt;<span class="bu">Integer</span>, <span class="bu">String</span>&gt; map = <span class="kw">new</span> <span class="bu">HashMap</span>&lt;&gt;();</span>
+<span id="cb1-48"><a href="#cb1-48"></a>        map.<span class="fu">put</span>(<span class="dv">1</span>, <span class="st">&quot;a&quot;</span>);</span>
+<span id="cb1-49"><a href="#cb1-49"></a>        map.<span class="fu">put</span>(<span class="dv">2</span>, <span class="st">&quot;b&quot;</span>);</span>
+<span id="cb1-50"><a href="#cb1-50"></a>        map.<span class="fu">entrySet</span>().<span class="fu">stream</span>();</span>
+<span id="cb1-51"><a href="#cb1-51"></a></span>
+<span id="cb1-52"><a href="#cb1-52"></a>        <span class="co">/**</span></span>
+<span id="cb1-53"><a href="#cb1-53"></a>         <span class="co">*</span> <span class="an">{@code Arrays}</span>在JDK1<span class="co">.8中加入了stream系列方法</span>， 数组可以调用Arrays<span class="co">.</span>stream<span class="co">(</span>T <span class="co">[]</span></span>
+<span id="cb1-54"><a href="#cb1-54"></a>         <span class="co">*</span> array<span class="co">)</span>实现流，同时还有参数不同的stream函数用来截取数组</span>
+<span id="cb1-55"><a href="#cb1-55"></a>         <span class="co">*/</span></span>
+<span id="cb1-56"><a href="#cb1-56"></a>        <span class="co">// 数组</span></span>
+<span id="cb1-57"><a href="#cb1-57"></a>        <span class="bu">String</span>[] arr = {<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>};</span>
+<span id="cb1-58"><a href="#cb1-58"></a>        <span class="bu">Arrays</span>.<span class="fu">stream</span>(arr);</span>
+<span id="cb1-59"><a href="#cb1-59"></a></span>
+<span id="cb1-60"><a href="#cb1-60"></a>        <span class="co">// 值，直接将值转变成流对象</span></span>
+<span id="cb1-61"><a href="#cb1-61"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>);</span>
+<span id="cb1-62"><a href="#cb1-62"></a></span>
+<span id="cb1-63"><a href="#cb1-63"></a>        <span class="co">// 从IO获取流</span></span>
+<span id="cb1-64"><a href="#cb1-64"></a>        <span class="kw">try</span> (</span>
+<span id="cb1-65"><a href="#cb1-65"></a>            Stream&lt;<span class="bu">String</span>&gt; lines = Files.<span class="fu">lines</span>(Paths.<span class="fu">get</span>(<span class="st">&quot;文件路径名&quot;</span>), <span class="bu">Charset</span>.<span class="fu">defaultCharset</span>())</span>
+<span id="cb1-66"><a href="#cb1-66"></a>        )</span>
+<span id="cb1-67"><a href="#cb1-67"></a>        {</span>
+<span id="cb1-68"><a href="#cb1-68"></a>            <span class="co">// 可对lines做一些操作</span></span>
+<span id="cb1-69"><a href="#cb1-69"></a>        }</span>
+<span id="cb1-70"><a href="#cb1-70"></a>        <span class="kw">catch</span> (<span class="bu">IOException</span> e)</span>
+<span id="cb1-71"><a href="#cb1-71"></a>        {}</span>
+<span id="cb1-72"><a href="#cb1-72"></a>        <span class="co">// 拓展：无限流的创建</span></span>
+<span id="cb1-73"><a href="#cb1-73"></a>        <span class="co">// 迭代</span></span>
+<span id="cb1-74"><a href="#cb1-74"></a>        Stream.<span class="fu">iterate</span>(<span class="dv">0</span>, x -&gt; x + <span class="dv">1</span>).<span class="fu">limit</span>(<span class="dv">10</span>).<span class="fu">forEach</span>(<span class="bu">System</span>.<span class="fu">out</span>::println);</span>
+<span id="cb1-75"><a href="#cb1-75"></a>        <span class="co">// 随机生成</span></span>
+<span id="cb1-76"><a href="#cb1-76"></a>        Stream.<span class="fu">generate</span>(() -&gt; <span class="bu">Math</span>.<span class="fu">random</span>());</span>
+<span id="cb1-77"><a href="#cb1-77"></a>    }</span></code></pre></div>
+<h2 id="流的常用方法">2.流的常用方法</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1"></a>    <span class="at">@Test</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">streamMethodTest</span>()</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    {</span>
+<span id="cb2-4"><a href="#cb2-4"></a>        <span class="co">/**</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>         <span class="co">*</span> <span class="co">@</span>decription 过滤器filter</span>
+<span id="cb2-6"><a href="#cb2-6"></a>         <span class="co">* </span><span class="an">@param 一个返回true或者false的lambda表达式</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>         <span class="co">*</span> <span class="an">@return </span>筛选出返回结果为true的元素</span>
+<span id="cb2-8"><a href="#cb2-8"></a>         <span class="co">*/</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">filter</span>(a -&gt;</span>
+<span id="cb2-10"><a href="#cb2-10"></a>        {</span>
+<span id="cb2-11"><a href="#cb2-11"></a>            <span class="kw">return</span> a.<span class="fu">equals</span>(<span class="dv">1</span>);</span>
+<span id="cb2-12"><a href="#cb2-12"></a>        }).<span class="fu">count</span>();</span>
+<span id="cb2-13"><a href="#cb2-13"></a></span>
+<span id="cb2-14"><a href="#cb2-14"></a>        <span class="co">/**</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>         <span class="co">*</span> <span class="co">@</span>description 去重</span>
+<span id="cb2-16"><a href="#cb2-16"></a>         <span class="co">* </span><span class="an">@return </span>the new stream</span>
+<span id="cb2-17"><a href="#cb2-17"></a>         <span class="co">*/</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">distinct</span>();</span>
+<span id="cb2-19"><a href="#cb2-19"></a></span>
+<span id="cb2-20"><a href="#cb2-20"></a>        <span class="co">/**</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>         <span class="co">*</span> <span class="co">@</span>decription 截取前n个元素</span>
+<span id="cb2-22"><a href="#cb2-22"></a>         <span class="co">* </span><span class="an">@return </span>the new stream</span>
+<span id="cb2-23"><a href="#cb2-23"></a>         <span class="co">*/</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">limit</span>(<span class="dv">2</span>);</span>
+<span id="cb2-25"><a href="#cb2-25"></a></span>
+<span id="cb2-26"><a href="#cb2-26"></a>        <span class="co">/**</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>         <span class="co">*</span> <span class="co">@</span>decription 跳过前n个元素</span>
+<span id="cb2-28"><a href="#cb2-28"></a>         <span class="co">* </span><span class="an">@return </span>the new stream</span>
+<span id="cb2-29"><a href="#cb2-29"></a>         <span class="co">*/</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a></span>
+<span id="cb2-31"><a href="#cb2-31"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">skip</span>(<span class="dv">2</span>);</span>
+<span id="cb2-32"><a href="#cb2-32"></a></span>
+<span id="cb2-33"><a href="#cb2-33"></a>        <span class="co">/**</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a>         <span class="co">*</span> <span class="co">@</span>decription map<span class="co">()</span> 一对一映射 输入一个元素，按照给定的规则处理该元素</span>
+<span id="cb2-35"><a href="#cb2-35"></a>         <span class="co">*/</span></span>
+<span id="cb2-36"><a href="#cb2-36"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">map</span>(a -&gt;</span>
+<span id="cb2-37"><a href="#cb2-37"></a>        {</span>
+<span id="cb2-38"><a href="#cb2-38"></a>            <span class="kw">return</span> a.<span class="fu">toUpperCase</span>();</span>
+<span id="cb2-39"><a href="#cb2-39"></a>        }).<span class="fu">map</span>(<span class="bu">String</span>::toLowerCase);</span>
+<span id="cb2-40"><a href="#cb2-40"></a></span>
+<span id="cb2-41"><a href="#cb2-41"></a>        <span class="co">/**</span></span>
+<span id="cb2-42"><a href="#cb2-42"></a>         <span class="co">*</span> <span class="co">@</span>description flatMap<span class="co">()</span> 将流扁平化，说人话就是将流中最基层的元素抽出来为单独的流，eg<span class="co">:</span></span>
+<span id="cb2-43"><a href="#cb2-43"></a>         <span class="co">*</span>              List<span class="kw">&lt;List</span><span class="er">&lt;Integer</span><span class="kw">&gt;</span><span class="co">&gt;</span></span>
+<span id="cb2-44"><a href="#cb2-44"></a>         <span class="co">*</span>              类型的，会把最底层的Integer抽取出来，和map<span class="co">()</span>不同的是map<span class="co">()</span>将List<span class="kw">&lt;Integer&gt;</span>视为一个流进行处理</span>
+<span id="cb2-45"><a href="#cb2-45"></a>         <span class="co">*/</span></span>
+<span id="cb2-46"><a href="#cb2-46"></a>        <span class="co">// 写法1</span></span>
+<span id="cb2-47"><a href="#cb2-47"></a>        Stream.<span class="fu">of</span>(<span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">3</span>, <span class="dv">4</span>), <span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>)).<span class="fu">flatMap</span>(<span class="bu">Collection</span>::stream).<span class="fu">map</span>(a -&gt;</span>
+<span id="cb2-48"><a href="#cb2-48"></a>        {</span>
+<span id="cb2-49"><a href="#cb2-49"></a>            <span class="co">// 此时 a就只是Integer了</span></span>
+<span id="cb2-50"><a href="#cb2-50"></a>            <span class="kw">return</span> a.<span class="fu">byteValue</span>();</span>
+<span id="cb2-51"><a href="#cb2-51"></a>        });</span>
+<span id="cb2-52"><a href="#cb2-52"></a>        <span class="co">// 写法2</span></span>
+<span id="cb2-53"><a href="#cb2-53"></a>        Stream.<span class="fu">of</span>(<span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">3</span>, <span class="dv">4</span>), <span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>)).<span class="fu">flatMap</span>(l -&gt;</span>
+<span id="cb2-54"><a href="#cb2-54"></a>        {</span>
+<span id="cb2-55"><a href="#cb2-55"></a>            <span class="kw">return</span> l.<span class="fu">stream</span>();</span>
+<span id="cb2-56"><a href="#cb2-56"></a>        }).<span class="fu">map</span>(a -&gt;</span>
+<span id="cb2-57"><a href="#cb2-57"></a>        {</span>
+<span id="cb2-58"><a href="#cb2-58"></a>            <span class="kw">return</span> a.<span class="fu">byteValue</span>();</span>
+<span id="cb2-59"><a href="#cb2-59"></a>        });</span>
+<span id="cb2-60"><a href="#cb2-60"></a></span>
+<span id="cb2-61"><a href="#cb2-61"></a>        <span class="co">/**</span></span>
+<span id="cb2-62"><a href="#cb2-62"></a>         <span class="co">*</span> <span class="co">@</span>description 是否匹配任意元素<span class="co">,</span>有任意一个符合为true</span>
+<span id="cb2-63"><a href="#cb2-63"></a>         <span class="co">*/</span></span>
+<span id="cb2-64"><a href="#cb2-64"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">anyMatch</span>(a -&gt;</span>
+<span id="cb2-65"><a href="#cb2-65"></a>        {</span>
+<span id="cb2-66"><a href="#cb2-66"></a>            <span class="kw">return</span> a.<span class="fu">equals</span>(<span class="dv">1</span>);</span>
+<span id="cb2-67"><a href="#cb2-67"></a>        });</span>
+<span id="cb2-68"><a href="#cb2-68"></a></span>
+<span id="cb2-69"><a href="#cb2-69"></a>        <span class="co">/**</span></span>
+<span id="cb2-70"><a href="#cb2-70"></a>         <span class="co">*</span> <span class="co">@</span>description 是否匹配所有元素</span>
+<span id="cb2-71"><a href="#cb2-71"></a>         <span class="co">*/</span></span>
+<span id="cb2-72"><a href="#cb2-72"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">allMatch</span>(a -&gt;</span>
+<span id="cb2-73"><a href="#cb2-73"></a>        {</span>
+<span id="cb2-74"><a href="#cb2-74"></a>            <span class="kw">return</span> a.<span class="fu">equals</span>(<span class="dv">1</span>);</span>
+<span id="cb2-75"><a href="#cb2-75"></a>        });</span>
+<span id="cb2-76"><a href="#cb2-76"></a></span>
+<span id="cb2-77"><a href="#cb2-77"></a>        <span class="co">/**</span></span>
+<span id="cb2-78"><a href="#cb2-78"></a>         <span class="co">*</span> <span class="co">@</span>description 是否所有元素都不匹配</span>
+<span id="cb2-79"><a href="#cb2-79"></a>         <span class="co">*/</span></span>
+<span id="cb2-80"><a href="#cb2-80"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">noneMatch</span>(a -&gt;</span>
+<span id="cb2-81"><a href="#cb2-81"></a>        {</span>
+<span id="cb2-82"><a href="#cb2-82"></a>            <span class="kw">return</span> a.<span class="fu">equals</span>(<span class="dv">1</span>);</span>
+<span id="cb2-83"><a href="#cb2-83"></a>        });</span>
+<span id="cb2-84"><a href="#cb2-84"></a></span>
+<span id="cb2-85"><a href="#cb2-85"></a>        <span class="co">/**</span></span>
+<span id="cb2-86"><a href="#cb2-86"></a>         <span class="co">*</span> <span class="co">@</span>description 从流中返回任意元素，返回结果放在Optional对象中<span class="co">(</span>实测怎么感觉就是findFirst<span class="co">())</span></span>
+<span id="cb2-87"><a href="#cb2-87"></a>         <span class="co">*/</span></span>
+<span id="cb2-88"><a href="#cb2-88"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">findAny</span>();</span>
+<span id="cb2-89"><a href="#cb2-89"></a></span>
+<span id="cb2-90"><a href="#cb2-90"></a>        <span class="co">/**</span></span>
+<span id="cb2-91"><a href="#cb2-91"></a>         <span class="co">*</span> <span class="co">@</span>description 返回第一个元素，返回结果放在Optional对象中</span>
+<span id="cb2-92"><a href="#cb2-92"></a>         <span class="co">*/</span></span>
+<span id="cb2-93"><a href="#cb2-93"></a>        Optional&lt;<span class="bu">Integer</span>&gt; res = Stream.<span class="fu">of</span>(<span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="bu">Arrays</span>.<span class="fu">asList</span>(<span class="dv">3</span>, <span class="dv">4</span>)).<span class="fu">flatMap</span>(<span class="bu">Collection</span>::stream)</span>
+<span id="cb2-94"><a href="#cb2-94"></a>                .<span class="fu">findFirst</span>();</span>
+<span id="cb2-95"><a href="#cb2-95"></a>        res.<span class="fu">ifPresent</span>(<span class="bu">System</span>.<span class="fu">out</span>::print);</span>
+<span id="cb2-96"><a href="#cb2-96"></a></span>
+<span id="cb2-97"><a href="#cb2-97"></a>        <span class="co">/**</span></span>
+<span id="cb2-98"><a href="#cb2-98"></a>         <span class="co">*</span> <span class="co">@</span>description reduce 自定义lambda表达式求和 以</span>
+<span id="cb2-99"><a href="#cb2-99"></a>         <span class="co">*</span>              identity为初始值，对流中的所有元素执行lambda表达式求和</span>
+<span id="cb2-100"><a href="#cb2-100"></a>         <span class="co">*/</span></span>
+<span id="cb2-101"><a href="#cb2-101"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">reduce</span>(<span class="dv">0</span>, (a, b) -&gt;</span>
+<span id="cb2-102"><a href="#cb2-102"></a>        {</span>
+<span id="cb2-103"><a href="#cb2-103"></a>            <span class="kw">return</span> a + b;</span>
+<span id="cb2-104"><a href="#cb2-104"></a>        });</span>
+<span id="cb2-105"><a href="#cb2-105"></a></span>
+<span id="cb2-106"><a href="#cb2-106"></a>    }</span></code></pre></div>
+<h2 id="普通流到数值流的转换">3.普通流到数值流的转换</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1"></a>    <span class="at">@Test</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">test3</span>()</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    {</span>
+<span id="cb3-4"><a href="#cb3-4"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">mapToDouble</span>(<span class="bu">Double</span>::valueOf);</span>
+<span id="cb3-5"><a href="#cb3-5"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">mapToLong</span>(<span class="bu">Long</span>::valueOf);</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    }</span></code></pre></div>
+<h2 id="stream收集器优雅的结束stream">4.Stream收集器—优雅的结束stream</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1"></a>    <span class="at">@Test</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">endStreamTest</span>()</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    {</span>
+<span id="cb4-4"><a href="#cb4-4"></a>        <span class="co">// 返回Map</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">toMap</span>(s -&gt; s, s -&gt; s));</span>
+<span id="cb4-6"><a href="#cb4-6"></a>        <span class="co">// 返回 List</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">toList</span>());</span>
+<span id="cb4-8"><a href="#cb4-8"></a>        <span class="co">// 返回Set</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">toSet</span>());</span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a>        <span class="co">// ========================stream收集器 =============================//</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>        <span class="co">/**</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>         <span class="co">*</span> <span class="co">@</span>description<span class="co">:</span>求数量</span>
+<span id="cb4-14"><a href="#cb4-14"></a>         <span class="co">*/</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>        <span class="co">// 写法1</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">count</span>();</span>
+<span id="cb4-17"><a href="#cb4-17"></a>        <span class="co">// 写法2</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>        Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>).<span class="fu">collect</span>(Collectors.<span class="fu">counting</span>());</span>
+<span id="cb4-19"><a href="#cb4-19"></a></span>
+<span id="cb4-20"><a href="#cb4-20"></a>        <span class="co">/**</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>         <span class="co">*</span> <span class="co">@</span>description<span class="co">:</span>求最值<span class="co">,</span>最大值最小值都类似，比较方法有comparingDouble、comparingInt、comparingLong、甚至自定义</span>
+<span id="cb4-22"><a href="#cb4-22"></a>         <span class="co">*/</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>        <span class="co">// 写法1</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>        Optional&lt;<span class="bu">Integer</span>&gt; res1 = Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>).<span class="fu">max</span>((x, y) -&gt;</span>
+<span id="cb4-25"><a href="#cb4-25"></a>        {</span>
+<span id="cb4-26"><a href="#cb4-26"></a>            <span class="kw">return</span> (x &lt; y) ? -<span class="dv">1</span> : ((x == y) ? <span class="dv">0</span> : <span class="dv">1</span>);</span>
+<span id="cb4-27"><a href="#cb4-27"></a>        });</span>
+<span id="cb4-28"><a href="#cb4-28"></a>        <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(res1.<span class="fu">get</span>());</span>
+<span id="cb4-29"><a href="#cb4-29"></a>        <span class="co">// 写法2 依据数值流比较大小不需要参数</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>        OptionalInt res2 = Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>).<span class="fu">mapToInt</span>(a -&gt;</span>
+<span id="cb4-31"><a href="#cb4-31"></a>        {</span>
+<span id="cb4-32"><a href="#cb4-32"></a>            <span class="kw">return</span> a;</span>
+<span id="cb4-33"><a href="#cb4-33"></a>        }).<span class="fu">max</span>();</span>
+<span id="cb4-34"><a href="#cb4-34"></a>        <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(res2.<span class="fu">getAsInt</span>());</span>
+<span id="cb4-35"><a href="#cb4-35"></a>        <span class="co">// 写法3 借助已有的Collectors.maxBy方法，没啥用，知道能这样写就好</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>        Optional&lt;<span class="bu">Integer</span>&gt; res3 = Stream.<span class="fu">of</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>).<span class="fu">collect</span>(Collectors.<span class="fu">maxBy</span>(<span class="bu">Comparator</span>.<span class="fu">comparingInt</span>(a -&gt;</span>
+<span id="cb4-37"><a href="#cb4-37"></a>        {</span>
+<span id="cb4-38"><a href="#cb4-38"></a>            <span class="kw">return</span> a;</span>
+<span id="cb4-39"><a href="#cb4-39"></a>        })));</span>
+<span id="cb4-40"><a href="#cb4-40"></a>        <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(res3.<span class="fu">get</span>());</span>
+<span id="cb4-41"><a href="#cb4-41"></a></span>
+<span id="cb4-42"><a href="#cb4-42"></a>        <span class="co">/**</span></span>
+<span id="cb4-43"><a href="#cb4-43"></a>         <span class="co">*</span> <span class="co">@</span>description<span class="co">:</span>求和、求平均值 方法也很多，类似求最值</span>
+<span id="cb4-44"><a href="#cb4-44"></a>         <span class="co">*/</span></span>
+<span id="cb4-45"><a href="#cb4-45"></a></span>
+<span id="cb4-46"><a href="#cb4-46"></a>        <span class="co">// ========================stream连接字符串 =============================//</span></span>
+<span id="cb4-47"><a href="#cb4-47"></a>        <span class="co">/**</span></span>
+<span id="cb4-48"><a href="#cb4-48"></a>         <span class="co">*</span> <span class="co">@</span>description<span class="co">:</span>连接字符串，默认中间无连接符，可以在joining方法中加入连接符 joining<span class="co">(&quot;</span>_<span class="co">&quot;)</span></span>
+<span id="cb4-49"><a href="#cb4-49"></a>         <span class="co">*/</span></span>
+<span id="cb4-50"><a href="#cb4-50"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">joining</span>());</span>
+<span id="cb4-51"><a href="#cb4-51"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>).<span class="fu">reduce</span>(<span class="st">&quot;&quot;</span>, (a, b) -&gt;</span>
+<span id="cb4-52"><a href="#cb4-52"></a>        {</span>
+<span id="cb4-53"><a href="#cb4-53"></a>            <span class="kw">return</span> a + b;</span>
+<span id="cb4-54"><a href="#cb4-54"></a>        });</span>
+<span id="cb4-55"><a href="#cb4-55"></a></span>
+<span id="cb4-56"><a href="#cb4-56"></a>        <span class="co">/**</span></span>
+<span id="cb4-57"><a href="#cb4-57"></a>         <span class="co">*</span> <span class="co">@</span>description<span class="co">:</span>自定义规约操作</span>
+<span id="cb4-58"><a href="#cb4-58"></a>         <span class="co">*</span> <span class="co">@</span>param<span class="co">:1.</span>初始值</span>
+<span id="cb4-59"><a href="#cb4-59"></a>         <span class="co">*</span> <span class="co">@</span>param<span class="co">:2.</span>对流中的数据进行处理</span>
+<span id="cb4-60"><a href="#cb4-60"></a>         <span class="co">*</span> <span class="co">@</span>param<span class="co">:3.</span>对处理后的元素进行自定义规约操作</span>
+<span id="cb4-61"><a href="#cb4-61"></a>         <span class="co">*/</span></span>
+<span id="cb4-62"><a href="#cb4-62"></a>        Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">reducing</span>(<span class="st">&quot;begin:&quot;</span>, a -&gt;</span>
+<span id="cb4-63"><a href="#cb4-63"></a>        {</span>
+<span id="cb4-64"><a href="#cb4-64"></a>            <span class="kw">return</span> a;</span>
+<span id="cb4-65"><a href="#cb4-65"></a>        }, (a, b) -&gt;</span>
+<span id="cb4-66"><a href="#cb4-66"></a>        {</span>
+<span id="cb4-67"><a href="#cb4-67"></a>            <span class="kw">return</span> a + b;</span>
+<span id="cb4-68"><a href="#cb4-68"></a>        }));</span>
+<span id="cb4-69"><a href="#cb4-69"></a></span>
+<span id="cb4-70"><a href="#cb4-70"></a>        <span class="co">// ========================stream连接字符串 =============================//</span></span>
+<span id="cb4-71"><a href="#cb4-71"></a>        <span class="co">/**</span></span>
+<span id="cb4-72"><a href="#cb4-72"></a>         <span class="co">*</span> <span class="co">@</span>description<span class="co">:</span>将元素按指定规则分组</span>
+<span id="cb4-73"><a href="#cb4-73"></a>         <span class="co">*/</span></span>
+<span id="cb4-74"><a href="#cb4-74"></a>        <span class="bu">Map</span>&lt;<span class="bu">String</span>, <span class="bu">List</span>&lt;<span class="bu">String</span>&gt;&gt; group1 = Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">groupingBy</span>(a -&gt;</span>
+<span id="cb4-75"><a href="#cb4-75"></a>        {</span>
+<span id="cb4-76"><a href="#cb4-76"></a>            <span class="kw">if</span> (<span class="st">&quot;a&quot;</span>.<span class="fu">equals</span>(a))</span>
+<span id="cb4-77"><a href="#cb4-77"></a>            {</span>
+<span id="cb4-78"><a href="#cb4-78"></a>                <span class="kw">return</span> <span class="st">&quot;isA&quot;</span>;</span>
+<span id="cb4-79"><a href="#cb4-79"></a>            }</span>
+<span id="cb4-80"><a href="#cb4-80"></a>            <span class="kw">else</span> <span class="kw">if</span> (<span class="st">&quot;b&quot;</span>.<span class="fu">equals</span>(a))</span>
+<span id="cb4-81"><a href="#cb4-81"></a>            {</span>
+<span id="cb4-82"><a href="#cb4-82"></a>                <span class="kw">return</span> <span class="st">&quot;isB&quot;</span>;</span>
+<span id="cb4-83"><a href="#cb4-83"></a></span>
+<span id="cb4-84"><a href="#cb4-84"></a>            }</span>
+<span id="cb4-85"><a href="#cb4-85"></a>            <span class="kw">else</span></span>
+<span id="cb4-86"><a href="#cb4-86"></a>            {</span>
+<span id="cb4-87"><a href="#cb4-87"></a>                <span class="kw">return</span> <span class="st">&quot;isOthers&quot;</span>;</span>
+<span id="cb4-88"><a href="#cb4-88"></a>            }</span>
+<span id="cb4-89"><a href="#cb4-89"></a>        }));</span>
+<span id="cb4-90"><a href="#cb4-90"></a></span>
+<span id="cb4-91"><a href="#cb4-91"></a>        <span class="co">// 可以在collect方法中添加参数，如再次分组或者统计每个分组的数量</span></span>
+<span id="cb4-92"><a href="#cb4-92"></a>        <span class="bu">Map</span>&lt;<span class="bu">String</span>, <span class="bu">Long</span>&gt; group2 = Stream.<span class="fu">of</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>).<span class="fu">collect</span>(Collectors.<span class="fu">groupingBy</span>((a) -&gt;</span>
+<span id="cb4-93"><a href="#cb4-93"></a>        {</span>
+<span id="cb4-94"><a href="#cb4-94"></a>            <span class="kw">if</span> (<span class="st">&quot;a&quot;</span>.<span class="fu">equals</span>(a))</span>
+<span id="cb4-95"><a href="#cb4-95"></a>            {</span>
+<span id="cb4-96"><a href="#cb4-96"></a>                <span class="kw">return</span> <span class="st">&quot;isA&quot;</span>;</span>
+<span id="cb4-97"><a href="#cb4-97"></a>            }</span>
+<span id="cb4-98"><a href="#cb4-98"></a>            <span class="kw">else</span> <span class="kw">if</span> (<span class="st">&quot;b&quot;</span>.<span class="fu">equals</span>(a))</span>
+<span id="cb4-99"><a href="#cb4-99"></a>            {</span>
+<span id="cb4-100"><a href="#cb4-100"></a>                <span class="kw">return</span> <span class="st">&quot;isB&quot;</span>;</span>
+<span id="cb4-101"><a href="#cb4-101"></a></span>
+<span id="cb4-102"><a href="#cb4-102"></a>            }</span>
+<span id="cb4-103"><a href="#cb4-103"></a>            <span class="kw">else</span></span>
+<span id="cb4-104"><a href="#cb4-104"></a>            {</span>
+<span id="cb4-105"><a href="#cb4-105"></a>                <span class="kw">return</span> <span class="st">&quot;isOthers&quot;</span>;</span>
+<span id="cb4-106"><a href="#cb4-106"></a>            }</span>
+<span id="cb4-107"><a href="#cb4-107"></a>        }, Collectors.<span class="fu">counting</span>()));</span>
+<span id="cb4-108"><a href="#cb4-108"></a>    }</span></code></pre></div>
+</section>
+<section id="结尾" class="slide level1">
+<h1>结尾</h1>
+<p><a href="https://github.com/ChengYongchao/kevinProject/blob/master/src/cyc/java/stream/Java8StreamAPI.java">Java8StreamAPI.java</a></p>
+<p>看到这么多代码，有人可能要问号警告了，相信我，按代码敲一遍，从此流操作就是so easy！</p>
+</section>
+    </div>
+  </div>
+
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/math/math.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
